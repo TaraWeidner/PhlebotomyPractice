@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Interactive beginner phlebotomy practice game for supervised training." />
+  <meta name="description" content="Interactive phlebotomy practice game from beginner through advanced specimen processing." />
   <title>Phlebotomy Practice Lab</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to game</a>
@@ -25,10 +25,10 @@
     <section id="startScreen" class="panel hero-panel">
       <div class="hero-copy">
         <p class="eyebrow">Choose your training level</p>
-        <h2>Build the draw before you ever touch a patient.</h2>
+        <h2>Build the draw. Then decide what happens to the specimen.</h2>
         <p>
-          Practice matching common tests to tube types, arranging the order of draw,
-          and recognizing safety situations. The scenarios use fictional patients and are for supervised education only.
+          Practice matching common tests to tube types, arranging order of draw, recognizing safety situations,
+          and—at the advanced level—making specimen processing decisions. All scenarios use fictional patients.
         </p>
       </div>
 
@@ -50,11 +50,17 @@
           <span class="mode-title">Challenge</span>
           <span class="mode-copy">Tube selection plus safety decisions and special collection situations.</span>
         </button>
+
+        <button class="mode-card advanced-card" data-mode="advanced" type="button">
+          <span class="mode-icon" aria-hidden="true">🔬</span>
+          <span class="mode-title">Advanced</span>
+          <span class="mode-copy">Green, Pink, Red, Gray and more—plus clotting, centrifugation, separation, transport, and whole-blood vs plasma decisions.</span>
+        </button>
       </div>
 
       <div class="training-note" role="note">
-        <strong>Training note:</strong> Tube requirements and processing can vary by assay, laboratory, and collection system.
-        Always verify real patient orders against the current laboratory directory, clinic policy, and supervisor instructions.
+        <strong>Training note:</strong> Tube requirements and processing can vary by assay, laboratory, manufacturer, and collection system.
+        Always verify real patient orders against the current laboratory directory, clinic policy, device instructions, and supervisor direction.
       </div>
     </section>
 
@@ -110,11 +116,11 @@
             </div>
           </section>
 
-          <section id="safetySection" class="section-block hidden" aria-labelledby="safetyHeading">
+          <section id="decisionSection" class="section-block hidden" aria-labelledby="decisionHeading">
             <div class="safety-box">
-              <p class="eyebrow">Safety Decision</p>
-              <h3 id="safetyHeading"></h3>
-              <div id="safetyOptions" class="choice-list"></div>
+              <p id="decisionEyebrow" class="eyebrow">Decision</p>
+              <h3 id="decisionHeading"></h3>
+              <div id="decisionOptions" class="choice-list"></div>
             </div>
           </section>
 
@@ -131,16 +137,20 @@
         <section class="panel compact-panel">
           <p class="eyebrow">Quick Reference</p>
           <div class="mini-reference">
-            <div><span class="tube-dot tube-gold"></span><strong>Gold / SST</strong><small>Serum / common chemistry</small></div>
-            <div><span class="tube-dot tube-blue"></span><strong>Light Blue</strong><small>Sodium citrate / coagulation</small></div>
+            <div><span class="tube-dot tube-red"></span><strong>Plain Red</strong><small>Serum / no anticoagulant</small></div>
+            <div><span class="tube-dot tube-blue"></span><strong>Light Blue</strong><small>Citrate / coagulation</small></div>
+            <div><span class="tube-dot tube-gold"></span><strong>Gold / SST</strong><small>Serum separator</small></div>
+            <div><span class="tube-dot tube-green"></span><strong>Green</strong><small>Heparin / whole blood or plasma</small></div>
             <div><span class="tube-dot tube-lavender"></span><strong>Lavender</strong><small>EDTA / hematology</small></div>
+            <div><span class="tube-dot tube-pink"></span><strong>Pink</strong><small>K2EDTA / often blood-bank use</small></div>
+            <div><span class="tube-dot tube-gray"></span><strong>Gray</strong><small>Fluoride / oxalate</small></div>
           </div>
         </section>
 
         <section class="panel compact-panel">
           <p class="eyebrow">Session</p>
           <div class="stat-row"><span>Correct draws</span><strong id="correctStat">0</strong></div>
-          <div class="stat-row"><span>Safety wins</span><strong id="safetyStat">0</strong></div>
+          <div class="stat-row"><span id="decisionStatLabel">Decision wins</span><strong id="decisionStat">0</strong></div>
           <div class="stat-row"><span>Best score</span><strong id="bestScoreStat">0</strong></div>
         </section>
       </aside>
@@ -163,7 +173,7 @@
     <form method="dialog" class="dialog-card">
       <div class="dialog-heading">
         <div>
-          <p class="eyebrow">Beginner Reference</p>
+          <p class="eyebrow">Tube Reference</p>
           <h2>Tube Cheat Sheet</h2>
         </div>
         <button class="icon-button" aria-label="Close cheat sheet" value="cancel">×</button>
@@ -171,9 +181,9 @@
 
       <div class="cheat-grid">
         <div class="cheat-card">
-          <div class="tube-illustration"><span class="tube-cap cap-gold"></span><span class="tube-body"></span></div>
-          <h3>Gold / Tiger SST</h3>
-          <p>Serum separator tube. Commonly used for chemistry, thyroid, hormones, lipids, vitamins, and many serologies.</p>
+          <div class="tube-illustration"><span class="tube-cap cap-red"></span><span class="tube-body"></span></div>
+          <h3>Plain Red</h3>
+          <p>No anticoagulant. Produces serum after clotting. If separated serum is required, allow clotting, centrifuge, then transfer serum away from cells as directed.</p>
         </div>
         <div class="cheat-card">
           <div class="tube-illustration"><span class="tube-cap cap-blue"></span><span class="tube-body"></span></div>
@@ -181,14 +191,35 @@
           <p>Sodium citrate. Commonly used for coagulation testing such as PT/INR. Correct fill is especially important.</p>
         </div>
         <div class="cheat-card">
+          <div class="tube-illustration"><span class="tube-cap cap-gold"></span><span class="tube-body"></span></div>
+          <h3>Gold / Tiger SST</h3>
+          <p>Clot activator plus gel barrier. Produces serum. Allow complete clotting before centrifugation; acceptable assays may be transported in the correctly spun tube with an intact barrier.</p>
+        </div>
+        <div class="cheat-card">
+          <div class="tube-illustration"><span class="tube-cap cap-green"></span><span class="tube-body"></span></div>
+          <h3>Green</h3>
+          <p>Lithium or sodium heparin. Can be whole blood or plasma depending on the assay. If plasma is required, centrifuge/separate within the test-specific window.</p>
+        </div>
+        <div class="cheat-card">
           <div class="tube-illustration"><span class="tube-cap cap-lavender"></span><span class="tube-body"></span></div>
           <h3>Lavender</h3>
-          <p>EDTA whole blood. Commonly used for CBC/CBC with differential and hemoglobin A1c.</p>
+          <p>K2EDTA. Commonly used as whole blood for CBC/CBC with differential and A1c. EDTA plasma is also used for some assays.</p>
+        </div>
+        <div class="cheat-card">
+          <div class="tube-illustration"><span class="tube-cap cap-pink"></span><span class="tube-body"></span></div>
+          <h3>Pink</h3>
+          <p>K2EDTA cross-match tube. Commonly associated with blood-bank workflows, but the receiving facility determines whether Pink, Lavender, or another container is acceptable.</p>
+        </div>
+        <div class="cheat-card">
+          <div class="tube-illustration"><span class="tube-cap cap-gray"></span><span class="tube-body"></span></div>
+          <h3>Gray</h3>
+          <p>Sodium fluoride with an anticoagulant. Used for selected glucose/lactate workflows. Processing and temperature requirements are highly test-specific.</p>
         </div>
       </div>
 
       <div class="training-note">
-        <strong>Remember:</strong> This is a learning shortcut, not a universal specimen manual. Verify the exact test in the current lab directory before a real collection.
+        <strong>Advanced rule:</strong> Never decide whether to spin a tube from cap color alone. Read the requested specimen:
+        <strong>serum</strong>, <strong>plasma</strong>, or <strong>whole blood</strong>—then follow the current test-directory and manufacturer instructions.
       </div>
     </form>
   </dialog>
@@ -197,6 +228,6 @@
     <p>Educational training tool • Fictional patient information only • No PHI should be entered into this app</p>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>
