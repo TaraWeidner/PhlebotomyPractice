@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Interactive beginner phlebotomy practice game for supervised training." />
+  <title>Phlebotomy Practice Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to game</a>
+
+  <header class="site-header">
+    <div class="brand-wrap">
+      <div class="brand-mark" aria-hidden="true">🩸</div>
+      <div>
+        <p class="eyebrow">Interactive Skills Practice</p>
+        <h1>Phlebotomy Practice Lab</h1>
+      </div>
+    </div>
+    <button id="cheatSheetButton" class="button button-ghost" type="button">Tube Cheat Sheet</button>
+  </header>
+
+  <main id="main" class="page-shell">
+    <section id="startScreen" class="panel hero-panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Choose your training level</p>
+        <h2>Build the draw before you ever touch a patient.</h2>
+        <p>
+          Practice matching common tests to tube types, arranging the order of draw,
+          and recognizing safety situations. The scenarios use fictional patients and are for supervised education only.
+        </p>
+      </div>
+
+      <div class="mode-grid" aria-label="Training modes">
+        <button class="mode-card" data-mode="beginner" type="button">
+          <span class="mode-icon" aria-hidden="true">🌱</span>
+          <span class="mode-title">Beginner</span>
+          <span class="mode-copy">Tube colors are shown beside each test. Focus on recognition and sequence.</span>
+        </button>
+
+        <button class="mode-card" data-mode="practice" type="button">
+          <span class="mode-icon" aria-hidden="true">🧪</span>
+          <span class="mode-title">Practice</span>
+          <span class="mode-copy">Tube hints are hidden. Build the correct draw from memory.</span>
+        </button>
+
+        <button class="mode-card" data-mode="challenge" type="button">
+          <span class="mode-icon" aria-hidden="true">⚡</span>
+          <span class="mode-title">Challenge</span>
+          <span class="mode-copy">Tube selection plus safety decisions and special collection situations.</span>
+        </button>
+      </div>
+
+      <div class="training-note" role="note">
+        <strong>Training note:</strong> Tube requirements and processing can vary by assay, laboratory, and collection system.
+        Always verify real patient orders against the current laboratory directory, clinic policy, and supervisor instructions.
+      </div>
+    </section>
+
+    <section id="gameScreen" class="game-layout hidden" aria-live="polite">
+      <div class="game-main">
+        <div class="progress-wrap panel compact-panel">
+          <div class="progress-meta">
+            <span id="modeLabel" class="pill">Beginner</span>
+            <span id="roundLabel">Scenario 1 of 8</span>
+            <span id="scoreLabel">Score: 0</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <article class="panel scenario-panel">
+          <div class="scenario-heading">
+            <div>
+              <p id="scenarioCategory" class="eyebrow"></p>
+              <h2 id="scenarioTitle"></h2>
+            </div>
+            <button id="restartButton" class="button button-ghost button-small" type="button">Change Mode</button>
+          </div>
+
+          <div class="patient-card">
+            <div><span class="label">Patient</span><strong id="patientName"></strong></div>
+            <div><span class="label">DOB</span><strong id="patientDob"></strong></div>
+            <div><span class="label">MRN</span><strong id="patientMrn"></strong></div>
+          </div>
+
+          <div id="patientNoteWrap" class="patient-note hidden">
+            <span aria-hidden="true">💬</span>
+            <p id="patientNote"></p>
+          </div>
+
+          <section class="section-block" aria-labelledby="ordersHeading">
+            <div class="section-heading-row">
+              <h3 id="ordersHeading">Lab Orders</h3>
+              <span id="hintLabel" class="hint-label"></span>
+            </div>
+            <div id="ordersList" class="orders-list"></div>
+          </section>
+
+          <section class="section-block" aria-labelledby="trayHeading">
+            <h3 id="trayHeading">Build the Draw</h3>
+            <p class="helper-text">Tap the tube types in the order you would collect them. Tap a selected tube to remove it.</p>
+            <div id="tubeTray" class="tube-tray"></div>
+
+            <div class="selected-draw-wrap">
+              <p class="label">Your order of draw</p>
+              <div id="selectedDraw" class="selected-draw empty-state">No tubes selected yet.</div>
+            </div>
+          </section>
+
+          <section id="safetySection" class="section-block hidden" aria-labelledby="safetyHeading">
+            <div class="safety-box">
+              <p class="eyebrow">Safety Decision</p>
+              <h3 id="safetyHeading"></h3>
+              <div id="safetyOptions" class="choice-list"></div>
+            </div>
+          </section>
+
+          <div class="action-row">
+            <button id="checkButton" class="button button-primary" type="button">Check My Draw</button>
+            <button id="resetDrawButton" class="button button-secondary" type="button">Reset Tubes</button>
+          </div>
+
+          <div id="feedback" class="feedback hidden" tabindex="-1"></div>
+        </article>
+      </div>
+
+      <aside class="game-sidebar">
+        <section class="panel compact-panel">
+          <p class="eyebrow">Quick Reference</p>
+          <div class="mini-reference">
+            <div><span class="tube-dot tube-gold"></span><strong>Gold / SST</strong><small>Serum / common chemistry</small></div>
+            <div><span class="tube-dot tube-blue"></span><strong>Light Blue</strong><small>Sodium citrate / coagulation</small></div>
+            <div><span class="tube-dot tube-lavender"></span><strong>Lavender</strong><small>EDTA / hematology</small></div>
+          </div>
+        </section>
+
+        <section class="panel compact-panel">
+          <p class="eyebrow">Session</p>
+          <div class="stat-row"><span>Correct draws</span><strong id="correctStat">0</strong></div>
+          <div class="stat-row"><span>Safety wins</span><strong id="safetyStat">0</strong></div>
+          <div class="stat-row"><span>Best score</span><strong id="bestScoreStat">0</strong></div>
+        </section>
+      </aside>
+    </section>
+
+    <section id="resultsScreen" class="panel results-panel hidden">
+      <p class="eyebrow">Session Complete</p>
+      <h2 id="resultsHeading">Nice work.</h2>
+      <div class="results-score"><span id="finalScore">0</span><small>points</small></div>
+      <p id="resultsMessage"></p>
+      <div id="resultsBreakdown" class="results-breakdown"></div>
+      <div class="action-row centered">
+        <button id="playAgainButton" class="button button-primary" type="button">Play Again</button>
+        <button id="resultsChangeModeButton" class="button button-secondary" type="button">Change Mode</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="cheatSheetDialog" class="cheat-dialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow">Beginner Reference</p>
+          <h2>Tube Cheat Sheet</h2>
+        </div>
+        <button class="icon-button" aria-label="Close cheat sheet" value="cancel">×</button>
+      </div>
+
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <div class="tube-illustration"><span class="tube-cap cap-gold"></span><span class="tube-body"></span></div>
+          <h3>Gold / Tiger SST</h3>
+          <p>Serum separator tube. Commonly used for chemistry, thyroid, hormones, lipids, vitamins, and many serologies.</p>
+        </div>
+        <div class="cheat-card">
+          <div class="tube-illustration"><span class="tube-cap cap-blue"></span><span class="tube-body"></span></div>
+          <h3>Light Blue</h3>
+          <p>Sodium citrate. Commonly used for coagulation testing such as PT/INR. Correct fill is especially important.</p>
+        </div>
+        <div class="cheat-card">
+          <div class="tube-illustration"><span class="tube-cap cap-lavender"></span><span class="tube-body"></span></div>
+          <h3>Lavender</h3>
+          <p>EDTA whole blood. Commonly used for CBC/CBC with differential and hemoglobin A1c.</p>
+        </div>
+      </div>
+
+      <div class="training-note">
+        <strong>Remember:</strong> This is a learning shortcut, not a universal specimen manual. Verify the exact test in the current lab directory before a real collection.
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="site-footer">
+    <p>Educational training tool • Fictional patient information only • No PHI should be entered into this app</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
